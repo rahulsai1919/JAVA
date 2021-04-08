@@ -1,0 +1,65 @@
+package threading.exercise;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+
+public class Demo {
+    public static void main(String[] args) {
+        String path = "C:\\Users\\rahul-pt4060\\IdeaProjects\\practice\\src\\threading\\exercise\\";
+        String file1 = path + "studentrecord1.txt";
+        String file2 = path + "studentrecord2.txt";
+        String outfile = path + "output.txt";
+        Thread th = new Transfer(file1,file2,outfile);
+        th.start();
+    }
+}
+
+class Transfer extends Thread
+{
+    String infilename1;
+    String infilename2;
+    String outfilename;
+    Transfer(String file1,String file2,String outfile)
+    {
+        this.infilename1 = file1;
+        this.infilename2 = file2;
+        this.outfilename = outfile;
+    }
+
+    @Override
+    public void run() {
+        try
+        {
+            BufferedReader reader1 = new BufferedReader(new FileReader(infilename1));
+            BufferedReader reader2 = new BufferedReader(new FileReader(infilename2));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outfilename));
+            boolean hasline = true;
+            String record1;
+            String record2;
+            while(hasline)
+            {
+                record1 = reader1.readLine();
+                record2 = reader2.readLine();
+                if(record1!=null && record2!=null) {
+                    writer.write(record1 + "\n");
+                    writer.write(record2 + "\n");
+                }
+                else if(record1==null && record2==null)
+                    hasline = false;
+                else if(record1==null)
+                    writer.write(record2 + "\n");
+                else
+                    writer.write(record1 + "\n");
+                System.out.println(record1 +" ... " + record2);
+            }
+            reader1.close();
+            writer.close();
+        }
+        catch(Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
+}
