@@ -1,0 +1,42 @@
+package com.jdbcDemo;
+
+import java.sql.*;
+
+public class EmployeeDAO {
+	
+	Connection con;
+
+	
+	public  void getConnection() throws Exception
+	{  
+		
+		
+			Class.forName("oracle.jdbc.driver.OracleDriver");  
+			  
+			
+			con=DriverManager.getConnection( "jdbc:oracle:thin:@localhost:1521:xe","system","oracle");  
+			  
+			//con.close();  
+	}  
+	
+	public void addEmployee(Employee e) throws Exception
+	{
+		 String insert = "INSERT INTO EMPLOYEE (empid,name,dob,salary) VALUES (?,?,?,?)";
+		PreparedStatement preparedStatement = con.prepareStatement(insert) ;
+		
+		preparedStatement.setInt(1, e.getEid());
+		preparedStatement.setString(2, e.getName());
+		preparedStatement.setString(3, e.getDOB());
+		preparedStatement.setInt(4, e.getSalary());
+		
+		preparedStatement.executeUpdate();
+		
+		
+		System.out.println("The Given data is succesfully inserted into the database");
+		
+		
+	}
+	
+	
+	
+}  

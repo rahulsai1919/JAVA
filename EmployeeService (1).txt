@@ -1,0 +1,35 @@
+package com.jdbcDemo;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+public class EmployeeService {
+
+	public static void main(String [] args) throws Exception
+	{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		System.out.println("Enter Employee Details");
+		System.out.println("Enter the ID :");
+		int id = Integer.parseInt(br.readLine());
+		System.out.println("Enter the Name :");
+		String n = br.readLine();
+		
+		System.out.println("Enter the DOB (dd/MM/yyyy):");
+		String d = br.readLine();
+		
+		System.out.println("Enter the salary :");
+		int s= Integer.parseInt(br.readLine());
+		
+		
+		
+		Employee e = new Employee(id,n,d,s);
+		EmployeeDAO ed = new EmployeeDAO();
+		
+		ed.getConnection();
+		ed.addEmployee(e);
+		
+	}
+	
+	
+}

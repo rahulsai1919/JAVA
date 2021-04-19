@@ -1,0 +1,34 @@
+package com.jdbcDemo;
+
+public class Employee {
+	
+	private int eid;
+	private String name;
+	private String DOB;
+	private int salary;
+	public Employee(int eid, String name, String dOB, int salary) {
+		super();
+		this.eid = eid;
+		this.name = name;
+		this.DOB = dOB;
+		this.salary = salary;
+	}
+	public int getEid() {
+		return eid;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getDOB() {
+		return DOB;
+	}
+	public int getSalary() {
+		return salary;
+	}
+	
+	
+	
+	
+	
+
+}
