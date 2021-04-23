@@ -1,0 +1,60 @@
+package programs;
+
+import java.io.*;
+
+public class Threadtransfer {
+	public static void main(String[] args) {
+		
+		File infile1 = new File("E:\\java\\sample files\\studentrecord1.txt");
+		File infile2 = new File("E:\\java\\sample files\\studentrecord2.txt");
+		File outfile = new File("E:\\java\\sample files\\output.txt");
+		Thread t1 = new Threadwrite(1,infile1, outfile);
+		Thread t2 = new Threadwrite(2,infile2, outfile);
+		t1.start();
+		t2.start();
+		System.out.println("written..");
+		
+	}
+
+}
+
+class Threadwrite extends Thread
+{
+
+	File infile;
+	File outfile;
+	int threadid;
+	public Threadwrite(int threadid,File infile, File outfile) 
+	{
+		this.threadid = threadid;
+		this.infile = infile;
+		this.outfile = outfile;
+	}
+
+	@Override
+	public void run() 
+	{
+		// TODO Auto-generated method stub
+		writeToFile();
+	}
+	
+	void writeToFile()
+	{
+		try
+		{
+			BufferedReader reader = new BufferedReader(new FileReader(infile));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outfile,true));
+			String line;
+			while((line = reader.readLine()) != null)
+			{
+				System.out.println("Thread " + threadid + " writing" + line);
+				writer.write(line + "\n");
+			}
+			writer.close();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}	
+}
