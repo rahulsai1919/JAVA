@@ -1,0 +1,257 @@
+package employeeDB;
+import java.io.FileInputStream;
+import java.sql.*;
+import java.util.*;
+
+class Employee {
+	private int e_id;
+	private String e_name;
+	private int e_salary;
+	private String e_dept;
+	public Employee(int e_id, String e_name, int e_salary, String e_dept) {
+		super();
+		this.e_id = e_id;
+		this.e_name = e_name;
+		this.e_salary = e_salary;
+		this.e_dept = e_dept;
+	}
+	public int getE_id() {
+		return e_id;
+	}
+	public void setE_id(int e_id) {
+		this.e_id = e_id;
+	}
+	public String getE_name() {
+		return e_name;
+	}
+	public void setE_name(String e_name) {
+		this.e_name = e_name;
+	}
+	public int getE_salary() {
+		return e_salary;
+	}
+	public void setE_salary(int e_salary) {
+		this.e_salary = e_salary;
+	}
+	public String getE_dept() {
+		return e_dept;
+	}
+	public void setE_dept(String e_dept) {
+		this.e_dept = e_dept;
+	}
+	
+}
+
+class EmployeeDAO
+{
+	static Connection con;
+	PreparedStatement pst;
+	
+	void getConnection()
+	{
+		String dbURL = "jdbc:sqlserver://RAHUL-PT4060\\RAHUL";
+        Properties property = new Properties();
+        try 
+        {
+        	property.load(new FileInputStream("C:\\Users\\rahul-pt4060\\eclipse-workspace\\DBProject\\src\\resources\\DBcredentials.properties"));
+        	con = DriverManager.getConnection(dbURL, property);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+        }
+      
+	}
+	
+	void addEmployee(Employee employee)
+	{
+		
+		try {
+			//pst.setInt(1, employee.getE_id());
+			pst.setString(1,employee.getE_name());
+			pst.setInt(2, employee.getE_salary());
+			pst.setString(3, employee.getE_dept());
+			
+			pst.executeUpdate();
+			
+			System.out.println("employee " + employee.getE_name() + " added");
+			
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	void createPreparedStatementtoadd()
+	{
+		String insertquery = "INSERT INTO information (name,salary,department) values(?,?,?)";
+		try
+		{
+			pst = con.prepareStatement(insertquery);
+		}
+		catch(SQLException se)
+		{
+			se.printStackTrace();
+		}
+	}
+	
+	void displayDetails()
+	{
+		String drlquery = "select * from information ";
+		Statement st;
+		try {
+			st = con.createStatement();
+			ResultSet myresult = st.executeQuery(drlquery);
+			//System.out.println(myresult);
+			while(myresult.next())
+			{
+				System.out.println("ID= "+myresult.getInt("ID")
+    							+ ",name= "+myresult.getString("name")
+    							+ ",salary= " + myresult.getInt("salary")
+    					 		+ ",department= " + myresult.getString("department"));
+			}
+		}
+		catch(SQLException se)
+		{
+			se.printStackTrace();
+		}
+	}
+	
+	void updatesalary(int salarytochange)
+	{
+		String query = "UPDATE information SET salary = salary + ?";
+		PreparedStatement tochangesal;
+		try
+		{
+			tochangesal = con.prepareStatement(query);
+			tochangesal.setInt(1, salarytochange);
+			
+			tochangesal.executeUpdate();
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	void deleteRecord(String name)
+	{
+		String query = "DELETE FROM information WHERE name = ?";
+		PreparedStatement todelete;
+		try
+		{
+			todelete = con.prepareStatement(query);
+			todelete.setString(1, name);
+			
+			todelete.executeUpdate();
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+}
+
+class EmployeeService
+{
+	EmployeeDAO edb ;
+	public void makeConnection(){
+		edb = new EmployeeDAO();
+		//creating connection
+		edb.getConnection();
+	}
+	
+	public void addEmployees() {
+		Scanner input = new Scanner(System.in);
+		System.out.println("enter number of employee records to add");
+		int n = input.nextInt();
+		List<Employee> employeeList = new ArrayList<Employee>(); 
+		for(int i=0;i<n;i++){
+			System.out.println("Enter employee details");
+			System.out.println("name:");
+			String name = input.next();
+			System.out.println("Salary:");
+			int salary = input.nextInt();
+			System.out.println("department:");
+			String dept = input.next();
+			Employee emp = new Employee(i, name, salary, dept);
+			employeeList.add(emp);
+		}
+		
+		//creating statement
+		edb.createPreparedStatementtoadd();
+		
+		for (Employee employee : employeeList) {
+			edb.addEmployee(employee);
+		}
+		
+	}
+	
+	public void showEmployees(){
+		edb.displayDetails();
+	}
+	
+	public void updateEmployeesalary(int salarytochange)
+	{
+		if(salarytochange != 0)
+		{
+			edb.updatesalary(salarytochange);
+			System.out.println("salary changed by "+ salarytochange +" for the employees");
+		}
+		else
+			System.out.println("no changes done");
+	}
+	
+	public void deletebyName(String name)
+	{
+		edb.deleteRecord(name);
+		System.out.println("employee " + name + " removed");
+	}
+	
+}
+
+public class DBOperations
+{
+	public static void main(String[] args) {
+		
+		Scanner input = new Scanner(System.in);
+		EmployeeService service = new EmployeeService();
+		service.makeConnection();
+		int option;
+		boolean operate = true;
+		while(operate){
+			System.out.println("enter 1 to add employee records");
+			System.out.println("enter 2 to show employee records");
+			System.out.println("enter 3 to change salary");
+			System.out.println("enter 4 to delete employee record by name");
+			option = input.nextInt();
+			if(option == 1){
+				service.addEmployees();
+			}
+			else if(option == 2)
+			{
+				service.showEmployees();
+			}
+			else if(option == 3)
+			{
+				System.out.println("change salary by.. (enter negative value to decrement)");
+				int sal = input.nextInt();
+				service.updateEmployeesalary(sal);
+			}
+			else if(option == 4)
+			{
+				System.out.println("enter name to remove the employee");
+				String nametoremove = input.next();
+				service.deletebyName(nametoremove);
+			}
+			else {
+				System.out.println("end");
+				operate = false;
+			}
+		}
+		input.close();
+	}
+}
+
